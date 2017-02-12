@@ -16,6 +16,8 @@
 
 #include "stdafx.h"
 #include <fstream>
+#include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -23,10 +25,8 @@ struct Point
 {
 	int x, y;
 };
-
 class Building
 {
-	
 public:
 	Building(int x1, int y1, int x2, int y2)
 	{
@@ -35,12 +35,6 @@ public:
 		C.x = x2;
 		C.y = y2;
 		FindBuildingArea(A, C);
-		
-	}
-	
-	void FindBuildingArea(Point A, Point C)
-	{
-		BuildingArea = (C.x - A.x)*(C.y - A.y);
 	}
 	int GetBuildingArea()const
 	{
@@ -50,33 +44,93 @@ private:
 	Point A;
 	Point C;
 	int BuildingArea;
+	void FindBuildingArea(Point A, Point C)
+	{
+		BuildingArea = (C.x - A.x)*(C.y - A.y);
+	}
 };
-bool ErrorOfCoordinats(int x1, int y1, int x2, int y2)
+bool IsErrorOfCoordinats(int x1, int y1, int x2, int y2, int a, int b);
+bool ReadCoordinats(fstream &input, int x1, int y1, int x2, int y2, int a, int b);
+void ReadNumbers(fstream &input, int a, int b);
+bool IsErrorOfSize(int a, int b);
+bool IsErrorOfCounts(int n, int m);
+
+int main()
 {
-	return(x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0);
+	int x1 = 0, y1 = 0, x2 = 0, y2 = 0, n = 0, m = 0, a = 0, b = 0;
+	vector<Building> gardenBuildings;
+	fstream inputFile("input.txt");
+	fstream outputFile("output.txt");
+	if (!inputFile.is_open())
+	{
+		cout << "Failed to open input file for reading\n";
+		return 1;
+	}
+	if (!outputFile.is_open())
+	{
+		cout << "Failed to open output file for writing\n";
+		return 1;
+	}
+	if (inputFile.peek() == ifstream::traits_type::eof())
+	{
+		cout << "Input file is empty\n";
+		return 1;
+	}
+	else
+	{
+		ReadNumbers(inputFile, n, m);
+	}
+	if (IsErrorOfCounts(n, m))
+	{
+		cout << "Error of counts of buildings or fruit cultures\n";
+		return 1;
+	}
+	ReadNumbers(inputFile, a, b);
+	if (IsErrorOfSize(a, b))
+	{
+		cout << "Error of garden plot\n";
+		return 1;
+	}
+	
+	for (auto i = 0; i < n; ++i)
+	{
+		if (ReadCoordinats(inputFile, x1, y1, x2, y2, a, b))
+		{
+			Building newBuild(x1, y1, x2, y2);
+			gardenBuildings.push_back(newBuild);
+		}
+		else
+		{
+			cout << "Error of coordinats\n";
+			return 1;
+		}
+	}
+
+    return 0;
 }
-bool ReadStream(fstream input, int x1, int y1 , int x2 ,int y2)
+
+bool IsErrorOfCoordinats(int x1, int y1, int x2, int y2, int a, int b)
+{
+	return(x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 > a || x2 > a || y1 > b || y2 > b);
+}
+bool ReadCoordinats(fstream &input, int x1, int y1, int x2, int y2, int a, int b)
 {
 	input >> x1;
 	input >> y1;
 	input >> x2;
 	input >> y2;
-	return (ErrorOfCoordinats(x1, y1, x2, y2));
+	return (IsErrorOfCoordinats(x1, y1, x2, y2, a, b));
 }
-bool ErrorsOfSize(int a, int b)
+void ReadNumbers(fstream &input, int a, int b)
+{
+	input >> a;
+	input >> b;
+}
+bool IsErrorOfSize(int a, int b)
 {
 	return(a < 1 || b < 1 || b > 10000);
 }
-bool ErrorsOfCounts(int m, int n)
+bool IsErrorOfCounts(int n, int m)
 {
 	return(n < 0 || n > 10 || m > 2 || m < 1);
 }
-int main()
-{
-	int x1, y1, x2, y2, n, m, a, b;
-
-	fstream input("input.txt");
-	fstream output("output.txt");
-    return 0;
-}
-
