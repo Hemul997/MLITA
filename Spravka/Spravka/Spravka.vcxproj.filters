@@ -16,12 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
-    <Text Include="input.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="output.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -35,7 +29,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Informatization_1_5.cpp">
+    <ClCompile Include="Spravka.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

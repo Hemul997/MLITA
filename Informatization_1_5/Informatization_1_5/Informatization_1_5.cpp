@@ -111,7 +111,7 @@ int main()
 
 bool IsErrorOfCoordinats(int x1, int y1, int x2, int y2, int a, int b)
 {
-	return(x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 > a || x2 > a || y1 > b || y2 > b);
+	return(x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 > x2 || x2 > a || y1 > b || y2 > b);
 }
 bool ReadCoordinats(fstream &input, int x1, int y1, int x2, int y2, int a, int b)
 {
