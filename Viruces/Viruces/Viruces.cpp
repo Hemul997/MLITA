@@ -27,6 +27,12 @@ int main()
 		cout << "Input error!\n";
 		return 1;
 	}
+	for (auto i = 0; i < countOfViruces; ++i)
+	{
+		Virus virus;
+		inputFile >> virus.x >> virus.y;
+		viruses.push_back(virus);
+	}
 
     return 0;
 }
