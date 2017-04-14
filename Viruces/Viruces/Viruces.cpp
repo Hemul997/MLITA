@@ -22,6 +22,11 @@ int main()
 	ifstream inputFile("input.txt");
 	vector<Virus> viruses;
 	inputFile >> sizeOfField >> countOfViruces;
+	if (sizeOfField < MIN_SIZE || sizeOfField > MAX_SIZE || countOfViruces > MAX_COUNT_VIRUCES || countOfViruces < MIN_COUNT_VIRUCES)
+	{
+		cout << "Input error!\n";
+		return 1;
+	}
 
     return 0;
 }
