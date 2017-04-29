@@ -74,10 +74,24 @@ void LowerCase(string & line)
 {
 	transform(line.begin(), line.end(), line.begin(), ::tolower);
 }
+void ReadFileToString(fstream &input, string &inputText)
+{
+	while (!input.eof())
+	{
+		string line;
+		getline(input, line, '\n');
+		inputText += line;
+	}
+}
 int main()
 {
-	string inputText = "polloplpol lopkolpol lop", searchText = "pol Lop";
+	fstream inputFile("input.txt");
+
+	string inputText, searchText = "pol Lop";
 	LowerCase(searchText);
+	inputText = "";
+	ReadFileToString(inputFile, inputText);
+	cout << inputText << endl;
 	vector<long long> substrPositions;
 	cout << "input word = " << inputText << " --- substring = " << searchText << endl;
 	if (!RabinKarpSearch(substrPositions, inputText, searchText))
@@ -86,7 +100,7 @@ int main()
 		return 0;
 	}
 	cout << "Found position : ";
-	for(auto it : substrPositions)
+	for (auto it : substrPositions)
 	{
 		cout << it << " ";
 	}
