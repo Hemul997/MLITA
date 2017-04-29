@@ -6,51 +6,89 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <boost/algorithm/string.hpp> 
 #include <algorithm>
+#include <cctype>
 
 using namespace std;
 
-const int NUMERATOR = 52;
-const int DENOMENATOR = 65713;
 
-int numberInitialization(size_t searchStrSize)//проверка на входной хэш
+const int NUMERATOR = 52;
+const unsigned long long DENOMENATOR = pow(2, 1e56);
+
+unsigned long long findAcceleratingCoeff(long long & m)
 {
-	int number = 1;
-	for (auto i = 0; i < searchStrSize; ++i)
+	unsigned long long h = 1;
+
+	for (long long i = 1; i < m; ++i)
 	{
-		number = (number*NUMERATOR) % DENOMENATOR;
+		h *= NUMERATOR % DENOMENATOR;
 	}
-	return number;
+	return h;
+
 }
-int ringHash(string searchString, size_t searchStrSize, int prevHash, int number)
+bool compareStrings(const string & inputText, const string & searchString, long long & pos) {
+
+	for (size_t i = 0; i < searchString.size(); ++i)
+	{
+		if (inputText[i + pos] != searchString[i])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+long long countHash(long long &prevHash, const char &symb)
 {
-	if (number == 0)
+	return((prevHash * NUMERATOR + symb) % DENOMENATOR);
+}
+bool RabinKarpSearch(vector<long long> &positions, const string & inputText, const string & searchString) 
+{
+	long long inputTextSize = inputText.size(), searchStringSize = searchString.size(), searchStringHash = 0, textBoxHash = 0;
+
+	if (inputTextSize < searchStringSize || inputTextSize == 0 || searchStringSize == 0)
 	{
-		number = numberInitialization(searchStrSize);
+		return false;
 	}
-	if (prevHash == 0)
+
+	unsigned long long acceleratingCoeff(findAcceleratingCoeff(searchStringSize));
+
+	for (long long i = 0; i < searchStringSize; ++i) 
 	{
-		for (auto i = 0; i < searchStrSize; ++i)
+		searchStringHash = countHash(searchStringHash, searchString[i]);
+		textBoxHash = countHash(textBoxHash, inputText[i]);
+	}
+
+	for (long long pos = 0; pos <= inputTextSize - searchStringSize; ++pos) 
+	{
+		if (searchStringHash == textBoxHash && compareStrings(inputText, searchString, pos))
 		{
-			prevHash = (prevHash*NUMERATOR + (int)searchString[i]) % DENOMENATOR;
+			positions.push_back(pos + 1);
 		}
-		return prevHash;
+		long long prevTextBoxHash = textBoxHash - inputText[pos] * acceleratingCoeff;
+		textBoxHash = countHash(prevTextBoxHash, inputText[pos + searchStringSize]);
 	}
-	else
-	{
-		int hash;
-		if (hash < 0) 
-		{
-			hash += DENOMENATOR;
-		}
-		return hash;
-	}
+	return (!positions.empty());
+}
+void LowerCase(string & line)
+{
+	transform(line.begin(), line.end(), line.begin(), ::tolower);
 }
 int main()
 {
-	string searchString, inputText; // входные данные
-
-	
-    return 0;
+	string inputText = "polloplpol lopkolpol lop", searchText = "pol Lop";
+	LowerCase(searchText);
+	vector<long long> substrPositions;
+	cout << "input word = " << inputText << " --- substring = " << searchText << endl;
+	if (!RabinKarpSearch(substrPositions, inputText, searchText))
+	{
+		cout << "Search word not found\n";
+		return 0;
+	}
+	cout << "Found position : ";
+	for(auto it : substrPositions)
+	{
+		cout << it << " ";
+	}
+	cout << endl;
 }
-
