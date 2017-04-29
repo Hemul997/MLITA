@@ -6,9 +6,10 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <boost/algorithm/string.hpp> 
 #include <algorithm>
-#include <cctype>
+#include <sstream>
+#include <windows.h>
+#include <clocale>
 
 using namespace std;
 
@@ -74,26 +75,27 @@ void LowerCase(string & line)
 {
 	transform(line.begin(), line.end(), line.begin(), ::tolower);
 }
-void ReadFileToString(fstream &input, string &inputText)
+void ReadFileToString(ifstream &input, string &inputText)
 {
 	while (!input.eof())
 	{
 		string line;
 		getline(input, line, '\n');
-		inputText += line;
+		LowerCase(line);
+		inputText += (line + ' ');
 	}
 }
 int main()
 {
-	fstream inputFile("input.txt");
-
-	string inputText, searchText = "pol Lop";
-	LowerCase(searchText);
-	inputText = "";
+	setlocale(LC_ALL, "");
+	ifstream inputFile("input.txt");
+	ofstream outputFile("output.txt");
+	string inputText, searchText;
+	getline(inputFile, searchText, '\n');
 	ReadFileToString(inputFile, inputText);
-	cout << inputText << endl;
 	vector<long long> substrPositions;
-	cout << "input word = " << inputText << " --- substring = " << searchText << endl;
+	LowerCase(searchText);
+	outputFile << inputText << " " << searchText;
 	if (!RabinKarpSearch(substrPositions, inputText, searchText))
 	{
 		cout << "Search word not found\n";
