@@ -8,8 +8,10 @@
 #include <map>
 
 using namespace std;
-const unsigned int MAX_COUNT_OF_LINES = 5 * pow(10, 5);
+const unsigned int MAX_COUNT_OF_LINES = static_cast<unsigned int>(5 * pow(10, 5));
 const unsigned int MIN_COUNT_OF_LINES = 1;
+const int MIN_LEFT_POINT = static_cast<int>(pow(-10, 9));
+const int MAX_RIGHT_POINT = static_cast<int>(pow(10, 9));
 //struct Point
 //{
 //	int x;
@@ -20,10 +22,11 @@ bool ReadPointsFromFile(ifstream &input, unsigned int countLines, Points &points
 {
 	for (unsigned int it = 0; it < countLines; ++it)
 	{
+		
 		int x1, x2;
 		/*Point point1, point2;*/
 		input >> x1 >> x2;
-		if (x1 > x2)
+		if (x1 > x2 || x1 < MIN_LEFT_POINT || x2 > MAX_RIGHT_POINT || (it < countLines && input.eof()))
 			return false;
 		else
 		{
@@ -37,7 +40,7 @@ bool ReadPointsFromFile(ifstream &input, unsigned int countLines, Points &points
 			points.emplace(pair<int, char>(x2, 'r'));
 		}
 	}
-	return(!points.empty());
+	return true;
 }
 int main()
 {
