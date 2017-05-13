@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C5D078EA-BBBD-4709-AB17-76EDF0F7822B}</ProjectGuid>
+    <ProjectGuid>{129098EA-3AAC-4738-A1EE-2D5B67BD9398}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>RabinCarp</RootNamespace>
+    <RootNamespace>Lines</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -142,17 +142,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="Bukvar.txt" />
     <Text Include="input.txt" />
     <Text Include="ReadMe.txt" />
-    <Text Include="output.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Rabin-Carp.cpp" />
+    <ClCompile Include="Lines.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

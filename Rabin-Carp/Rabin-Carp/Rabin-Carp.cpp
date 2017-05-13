@@ -7,17 +7,22 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <sstream>
 #include <windows.h>
 #include <clocale>
+#include <set>
 
 using namespace std;
 
 
 const int NUMERATOR = 52;
-const unsigned long long DENOMENATOR = pow(2, 1e56);
+const unsigned long long DENOMENATOR = static_cast<unsigned long long>(pow(2, 1e56));
 
-unsigned long long findAcceleratingCoeff(long long & m)
+struct Rows
+{
+	int numOfRow;
+	long long numOfRowEnd;
+};
+unsigned long long findAcceleratingCoeff(unsigned int m)
 {
 	unsigned long long h = 1;
 
@@ -28,8 +33,8 @@ unsigned long long findAcceleratingCoeff(long long & m)
 	return h;
 
 }
-bool compareStrings(const string & inputText, const string & searchString, long long & pos) {
-
+bool compareStrings(const string & inputText, const string & searchString, unsigned int pos) 
+{
 	for (size_t i = 0; i < searchString.size(); ++i)
 	{
 		if (inputText[i + pos] != searchString[i])
@@ -43,15 +48,10 @@ long long countHash(long long &prevHash, const char &symb)
 {
 	return((prevHash * NUMERATOR + symb) % DENOMENATOR);
 }
-bool RabinKarpSearch(vector<long long> &positions, const string & inputText, const string & searchString) 
+bool RabinKarpSearch(set<unsigned int> &positions, const string & inputText, const string & searchString) 
 {
-	long long inputTextSize = inputText.size(), searchStringSize = searchString.size(), searchStringHash = 0, textBoxHash = 0;
-
-	if (inputTextSize < searchStringSize || inputTextSize == 0 || searchStringSize == 0)
-	{
-		return false;
-	}
-
+	long long searchStringHash = 0, textBoxHash = 0;
+	unsigned int inputTextSize = static_cast<unsigned int>(inputText.size()), searchStringSize = static_cast<unsigned int>(searchString.size());
 	unsigned long long acceleratingCoeff(findAcceleratingCoeff(searchStringSize));
 
 	for (long long i = 0; i < searchStringSize; ++i) 
@@ -60,11 +60,11 @@ bool RabinKarpSearch(vector<long long> &positions, const string & inputText, con
 		textBoxHash = countHash(textBoxHash, inputText[i]);
 	}
 
-	for (long long pos = 0; pos <= inputTextSize - searchStringSize; ++pos) 
+	for (unsigned int pos = 0; pos <= inputTextSize - searchStringSize; ++pos)
 	{
 		if (searchStringHash == textBoxHash && compareStrings(inputText, searchString, pos))
 		{
-			positions.push_back(pos + 1);
+			positions.emplace(pos + 1);
 		}
 		long long prevTextBoxHash = textBoxHash - inputText[pos] * acceleratingCoeff;
 		textBoxHash = countHash(prevTextBoxHash, inputText[pos + searchStringSize]);
@@ -75,14 +75,45 @@ void LowerCase(string & line)
 {
 	transform(line.begin(), line.end(), line.begin(), ::tolower);
 }
-void ReadFileToString(ifstream &input, string &inputText)
+void ReadFileToString(ifstream &input, string &inputText, vector<Rows> &rows)
 {
+	long long endOfLine = 0;
+	int numOfLine = 0;
 	while (!input.eof())
 	{
 		string line;
+		Rows row;
 		getline(input, line, '\n');
+		++numOfLine;
 		LowerCase(line);
-		inputText += (line + ' ');
+		if (!input.eof())
+		{
+			line += ' ';
+		}
+		endOfLine += line.size();
+		inputText += line;
+		row.numOfRow = numOfLine;
+		row.numOfRowEnd = endOfLine;
+		rows.push_back(row);
+	}
+}
+Rows findLine(vector<Rows> &rows, unsigned int pos)
+{
+	Rows row;
+	unsigned int endPosOfLastLine = 0;
+	for (auto it : rows)
+	{
+		if (pos < it.numOfRowEnd)
+		{
+			row.numOfRow = it.numOfRow;
+			row.numOfRowEnd = pos;
+			row.numOfRowEnd -= endPosOfLastLine;
+			return row;
+		}
+		else
+		{
+			endPosOfLastLine = it.numOfRowEnd;
+		}
 	}
 }
 int main()
@@ -90,21 +121,45 @@ int main()
 	setlocale(LC_ALL, "");
 	ifstream inputFile("input.txt");
 	ofstream outputFile("output.txt");
-	string inputText, searchText;
+	if (!inputFile.is_open())
+	{
+		outputFile << "Failed to open " << "input.txt" << " for reading\n";
+		return 1;
+	}
+	vector<Rows> rows;
+	string inputText, searchText, nameOfFile;
 	getline(inputFile, searchText, '\n');
-	ReadFileToString(inputFile, inputText);
-	vector<long long> substrPositions;
+	if (searchText.size() < 1 || searchText.size() > 255)
+	{
+		outputFile << "Error of search word\n";
+	}
+	getline(inputFile, nameOfFile, '\n');
+	if (nameOfFile.empty())
+	{
+		outputFile << "Error of name file for searching\n";
+		return 1;
+	}
+	ifstream textFile(nameOfFile);
+	ReadFileToString(textFile, inputText, rows);
 	LowerCase(searchText);
-	outputFile << inputText << " " << searchText;
+	if (inputText.size() < searchText.size() || inputText.size() == 0)
+	{
+		outputFile << "Invalid input\n";
+		return 1;
+	}
+	set<unsigned int> substrPositions;
 	if (!RabinKarpSearch(substrPositions, inputText, searchText))
 	{
 		cout << "Search word not found\n";
-		return 0;
+		return 1;
 	}
-	cout << "Found position : ";
+	outputFile << "Found position :\n";
+	
 	for (auto it : substrPositions)
 	{
-		cout << it << " ";
+		Rows outputRow;
+		outputRow = findLine(rows, it);
+		outputFile << outputRow.numOfRow  << ' '<< outputRow.numOfRowEnd << endl;
 	}
-	cout << endl;
+	return 0;
 }
